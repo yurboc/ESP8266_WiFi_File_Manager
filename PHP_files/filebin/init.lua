@@ -1,6 +1,10 @@
 -- Prepare Wi-Fi
+cfg={}
+cfg.ssid="YOUR_SSID" ---   SSID for your Wi-Fi AP here
+cfg.pwd="YOUR_PWD"   ---   Password for your Wi-Fi AP here
+cfg.auto=true
 wifi.setmode(wifi.STATION)
-wifi.sta.config("SSID","password")   ---   SSID and Password for your LAN DHCP here
+wifi.sta.config(cfg)
 
 -- Prepare WS2812 buffer
 numberOfLeds = 117
@@ -21,27 +25,9 @@ print("FlashID: "..flashid.."\n".."Flashmode: "..flashmode.."\nHeap: "..node.hea
 -- Get file system info
 remaining, used, total=file.fsinfo()
 print("\nFile system info:\nTotal : "..total.." Bytes\nUsed : "..used.." Bytes\nRemain: "..remaining.." Bytes")
-print("\nReady (waiting 5000 ms to start server)")
-
--- Get RTC time
-sntp_sync_done = false
-sntp.sync("192.168.1.1",
-  function(sec, usec, server, info)
-    if sntp_sync_done then 
-      return
-    end
-    file.open("_time.lua","w")
-    sec = sec + 3*60*60 -- UTC+3
-    tm = rtctime.epoch2cal(sec, usec)
-    file.writeline(string.format("RTC sync: %04d/%02d/%02d %02d:%02d:%02d (UTC+3)", tm["year"], tm["mon"], tm["day"], tm["hour"], tm["min"], tm["sec"]))
-    file.close()
-    sntp_sync_done = true
-  end,
-  function(sec, usec, server, info)
-    print('RTC sync failed!')
-  end,
-  1
-)
+print("\nReady (waiting to start server)")
 
 -- Start HTTP server
-tmr.create():alarm(5000, tmr.ALARM_SINGLE,  function() dofile("_srv.lua") end)
+tmr.create():alarm(10000, tmr.ALARM_SINGLE,  function() dofile("_rtc.lua") end)
+tmr.create():alarm(15000, tmr.ALARM_SINGLE,  function() dofile("_mqtt.lua") end)
+tmr.create():alarm(20000, tmr.ALARM_SINGLE,  function() dofile("_srv.lua") end)
