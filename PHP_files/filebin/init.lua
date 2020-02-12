@@ -28,6 +28,6 @@ print("\nFile system info:\nTotal : "..total.." Bytes\nUsed : "..used.." Bytes\n
 print("\nReady (waiting to start server)")
 
 -- Start HTTP server
-tmr.create():alarm(10000, tmr.ALARM_SINGLE,  function() dofile("_rtc.lua") end)
-tmr.create():alarm(15000, tmr.ALARM_SINGLE,  function() dofile("_mqtt.lua") end)
-tmr.create():alarm(20000, tmr.ALARM_SINGLE,  function() dofile("_srv.lua") end)
+tmr.create():alarm(10000, tmr.ALARM_SINGLE,  function() dofile("_srv.lua") end)
+tmr.create():alarm(15000, tmr.ALARM_SINGLE,  function() dofile("_rtc.lua") end)
+tmr.create():alarm(20000, tmr.ALARM_SINGLE,  function() dofile("_mqtt.lua") end)
