@@ -16,6 +16,10 @@ buffer:fill(0, 0, 0)
 ws2812.init()
 ws2812.write(buffer)
 
+-- prepare MQTT client
+mqtt_client = mqtt.Client("mqtt_led_client", 120)
+mqtt_connected = false
+
 -- Get system info
 majorVer, minorVer, devVer, chipid, flashid, flashsize, flashmode, flashspeed = node.info();
 print("System Info:  ")

@@ -12,14 +12,10 @@ local cmd_found = false
 -- Use animation
 if _GET.anim ~= nil then
   cmd_found = true
-
   dofile("_anim.lua")
-
   ok, json = pcall(cjson.encode, {res="OK"})
   if ok then
     buf = json
-  else
-    print("Failed to encode result as JSON")
   end
 end
 
@@ -41,14 +37,36 @@ if _GET.color ~= nil and not cmd_found then
   end
   
   ws2812.write(buffer)
-  
-  print("Set WS2812 strip color: R="..r..", G="..g..", B="..b)
-  
+
   ok, json = pcall(cjson.encode, {res="OK"})
   if ok then
     buf = json
-  else
-    print("Failed to encode result as JSON")
+  end
+
+  -- publish to MQTT
+  if mqtt_connected then
+    local n_value = 0
+    local s_value = "0"
+    local full_strip_off = (r == 0 and g == 0 and b == 0)
+    local full_strip_on = (r == 255 and g == 255 and b == 255)
+    if not full_strip_off then
+      n_value = 1
+      s_value = "100"
+    end
+    if full_strip_on or full_strip_off then
+      -- publish "Light/Switch" (8)
+      values = {idx=8,nvalue=n_value}
+      ok, json = pcall(cjson.encode, values)
+      if ok then
+        mqtt_client:publish("ledstrip/out", json, 0, 0)
+      end
+    end
+    -- publish "Color Switch" (15) -- works wrong
+    --values = {Color={r=r,g=g,b=b},idx=15,nvalue=n_value,svalue=s_value}
+    --ok, json = pcall(cjson.encode, values)
+    --if ok then
+    --  mqtt_client:publish("ledstrip/out", json, 0, 0)
+    --end
   end
 end
 
@@ -64,16 +82,12 @@ if _GET.values ~= nil then
   ok, json = pcall(cjson.encode, values)
   if ok then
     buf = json
-  else
-    print("Failed to encode result as JSON")
   end
-  
 end
 
 -- Show controls as HTML page
 if _GET.mode ~= nil then
   cmd_found = true
-
   if _GET.mode == "html" then
     outfile = "_led.html"
   end
@@ -81,13 +95,8 @@ end
 
 -- Wrong command
 if not cmd_found then
-   
   ok, json = pcall(cjson.encode, {res="WRONG_PARAM"})
   if ok then
     buf = json
-  else
-    print("Failed to encode result as JSON")
   end
-   
 end
-

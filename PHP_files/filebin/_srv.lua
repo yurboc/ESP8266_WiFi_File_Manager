@@ -39,9 +39,9 @@ srv:listen(80, function(conn)
       dofile("_get.lua")
       if outfile ~= "" then
         -- send FILE as response
-		CLIENT = client
-		FILENAME = outfile
-		dofile("_stream.lua")
+        CLIENT = client
+        FILENAME = outfile
+        dofile("_stream.lua")
       else
         -- send TEXT as response
         client:send(buf)
@@ -59,7 +59,7 @@ srv:listen(80, function(conn)
       CLIENT = client
       FILENAME = "_info.lua"
       dofile("_stream.lua")
-      
+
     end
 
     collectgarbage()
