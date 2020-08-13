@@ -49,7 +49,7 @@ function handle_mqtt_message(client, topic, data)
 end
 
 -- create MQTT client
-mqtt_client:lwt("ledstrip/out", "{'state': 'OFFLINE'}", 0, 0)
+mqtt_client:lwt("ledstrip/out", '{"state":"OFFLINE"}', 0, 0)
 mqtt_client:on("message", handle_mqtt_message)
 mqtt_client:connect("rpi", handle_mqtt_connected)
 --mqtt_client:close()
